@@ -15,3 +15,6 @@ LINK_DIRECTORIES(/Users/imhiro/AllFiles/103_prog/europython_2019/lvl${LVL}/cpp/c
 add_executable(go_python_demo0 main.cpp cgo_lib/cgo_lib_lvl${LVL}.h)
 
 TARGET_LINK_LIBRARIES(go_python_demo0 ${CMAKE_SOURCE_DIR}/cgo_lib/cgo_lib_lvl${LVL}.a)
+
+
+add_executable(cgo_support cgo_support/lvl2_cgo_support.cpp cgo_support/lvl2_cgo_support.h cgo_support/main.cpp)
