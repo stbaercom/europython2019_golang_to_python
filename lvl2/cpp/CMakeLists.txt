@@ -1,12 +1,17 @@
 cmake_minimum_required(VERSION 3.14)
-project(go_python_demo0)
+
+
+SET(LVL "2")
+
+
+project(cgo_demo_${LVL})
 
 set(CMAKE_CXX_STANDARD 17)
 
 
-INCLUDE_DIRECTORIES(/Users/imhiro/AllFiles/103_prog/cpp/go_python_demo0/cgo_lib)
-LINK_DIRECTORIES(/Users/imhiro/AllFiles/103_prog/cpp/go_python_demo0/cgo_lib)
+INCLUDE_DIRECTORIES(/Users/imhiro/AllFiles/103_prog/europython_2019/lvl${LVL}/cpp/cgo_lib)
+LINK_DIRECTORIES(/Users/imhiro/AllFiles/103_prog/europython_2019/lvl${LVL}/cpp/cgo_lib)
 
-add_executable(go_python_demo0 main.cpp cgo_lib/main.h)
+add_executable(go_python_demo0 main.cpp cgo_lib/cgo_lib_lvl${LVL}.h)
 
-TARGET_LINK_LIBRARIES(go_python_demo0 ${CMAKE_SOURCE_DIR}/cgo_lib/main.a)
+TARGET_LINK_LIBRARIES(go_python_demo0 ${CMAKE_SOURCE_DIR}/cgo_lib/cgo_lib_lvl${LVL}.a)

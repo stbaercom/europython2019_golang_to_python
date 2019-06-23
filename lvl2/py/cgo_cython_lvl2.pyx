@@ -5,7 +5,8 @@
 from libc.stdlib cimport free
 
 
-cdef extern from "cgo_lib/main.h":
+
+cdef extern from "cgo_lib/cgo_lib_lvl2.h":
     long unsigned int cgo_NewPerson(char* p0, char* p1, unsigned int p2)
     void cgo_DeletePerson(long unsigned int p0)
     char* cgo_Person_Firstname(long unsigned int p0)

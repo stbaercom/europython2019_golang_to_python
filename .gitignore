@@ -13,3 +13,4 @@ temp.macosx-10.14-x86_64-3.7
 /lvl2/py/cgo_lib/cgo_lib_lvl2.h
 /lvl2/cpp/cgo_lib/cgo_lib_lvl2.h
 /lvl2/go/cgo_lib/cgo_lib_lvl2.h
+/lvl2/py/cgo_cython_lvl2.cpp
