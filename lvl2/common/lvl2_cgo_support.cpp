@@ -9,8 +9,8 @@ using namespace std;
 
 
 
-OPAQUE_STRING_LIST get_OPAQUE_STRING_LIST(size_t size) {
-    auto list = new vector<string>(size);
+OPAQUE_STRING_LIST get_OPAQUE_STRING_LIST() {
+    auto list = new vector<string>();
     return static_cast<OPAQUE_STRING_LIST>(list);
 }
 
@@ -21,8 +21,8 @@ void append_to_OPAQUE_STRING_LIST(OPAQUE_STRING_LIST obj, char *val) {
     list->push_back(str);
 }
 
-OPAQUE_OID_LIST get_OPAQUE_OID_LIST(size_t size) {
-    auto list = new vector<unsigned long>(size);
+OPAQUE_OID_LIST get_OPAQUE_OID_LIST() {
+    auto list = new vector<unsigned long>();
     return static_cast<OPAQUE_OID_LIST>(list);
 }
 

@@ -1,5 +1,4 @@
 
-#include "stddef.h"
 
 
 #ifdef __cplusplus
@@ -11,10 +10,10 @@ typedef void* OPAQUE_STRING_LIST;
 typedef void* OPAQUE_OID_LIST;
 typedef void* OPAQUE_UINT2UINT_MAP;
 
-OPAQUE_STRING_LIST get_OPAQUE_STRING_LIST(size_t size);
+OPAQUE_STRING_LIST get_OPAQUE_STRING_LIST();
 void append_to_OPAQUE_STRING_LIST(OPAQUE_STRING_LIST obj,char * val);
 
-OPAQUE_OID_LIST get_OPAQUE_OID_LIST(size_t size);
+OPAQUE_OID_LIST get_OPAQUE_OID_LIST();
 void append_to_OPAQUE_OID_LIST(OPAQUE_OID_LIST obj, unsigned long oid);
 
 

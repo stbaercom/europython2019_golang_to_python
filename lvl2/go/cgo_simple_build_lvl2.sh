@@ -1,26 +1,12 @@
 #!/usr/bin/env bash
 
-LVL=2
-NAME="cgo_lib_lvl${LVL}"
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )"/.. >/dev/null 2>&1 && pwd )"
-
-CGO="${DIR}/go/cgo_lib"
-
-DSTPY="${DIR}/py/cgo_lib"
-
-DSTCPP="${DIR}/cpp/cgo_lib"
+export GOPATH="/Users/imhiro/AllFiles/103_prog/europython_2019/lvl2/go"
 
 
-#echo ${LVL} ${NAME} ${DIR} $'\n' ${SRCDIR} $'\n' ${DSTPY} $'\n' ${DSTCPP}
+cd /Users/imhiro/AllFiles/103_prog/europython_2019/lvl2/go/src/com.stbaer/demo_cgo
+go build -o ../../../cgo_lib/cgo_lib_lvl2.a -buildmode=c-archive
 
-rm ${CGO}/*.{a,h} >/dev/null 2>&1
 
-go build  -o "${CGO}/${NAME}.a" -buildmode=c-archive src/com.stbaer/demo_cgo/main.go
-
-rm ${DSTPY}/*.{a,h} >/dev/null 2>&1
-cp ${CGO}/*.{a,h} ${DSTPY}
-
-rm ${DSTCPP}/*.{a,h} >/dev/null 2>&1
-cp ${CGO}/*.{a,h} ${DSTCPP}
-
+cp /Users/imhiro/AllFiles/103_prog/europython_2019/lvl2/go/cgo_lib/* /Users/imhiro/AllFiles/103_prog/europython_2019/lvl2/py/cgo_lib
+cp /Users/imhiro/AllFiles/103_prog/europython_2019/lvl2/go/cgo_lib/* /Users/imhiro/AllFiles/103_prog/europython_2019/lvl2/cpp/cgo_lib
