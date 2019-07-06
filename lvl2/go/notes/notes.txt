@@ -1,0 +1,2 @@
+Terminal
+$ go build -o ../../../cgo_lib/cgo_lib_lvl2.a -buildmode=c-archive

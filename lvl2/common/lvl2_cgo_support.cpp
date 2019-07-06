@@ -40,3 +40,29 @@ void insert_into_UINT2UINT_MAP(OPAQUE_UINT2UINT_MAP obj, unsigned int age, unsig
     auto map = static_cast<unordered_map<unsigned int, unsigned int>*>(obj);
     map->insert({age,count});
 }
+
+//LVL3
+
+int call_CALLBACK_OID_PERSON(CALLBACK_OID_PERSON cgo_fun, unsigned long oid_friend) {
+    return cgo_fun(oid_friend);
+}
+
+int call_CALLBACK_AGE(CALLBACK_AGE cgo_fun,unsigned int age) {
+    return cgo_fun(age);
+}
+
+
+//LVL4
+int call_CALLBACK_AGE_2(CALLBACK_AGE_2 cgo_fun, unsigned int age, void *data) {
+    return cgo_fun(age,data);
+}
+
+unsigned int get_size_OPAQUE_OID_LIST(OPAQUE_OID_LIST obj) {
+    auto list = static_cast<vector<unsigned long>*>(obj);
+    return list->size();
+}
+
+unsigned long get_at_OPAQUE_OID_LIST(OPAQUE_OID_LIST obj, unsigned int index) {
+    auto list = static_cast<vector<unsigned long>*>(obj);
+    return list->at(index);
+}

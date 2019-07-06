@@ -18,3 +18,6 @@ TARGET_LINK_LIBRARIES(go_python_demo0 ${CMAKE_SOURCE_DIR}/cgo_lib/cgo_lib_lvl${L
 
 
 add_executable(cgo_support cgo_support/lvl2_cgo_support.cpp cgo_support/lvl2_cgo_support.h cgo_support/main.cpp)
+
+
+add_executable(cpp_personlib cpp_personlib/main.cpp cpp_personlib/person.cpp cpp_personlib/person.h)

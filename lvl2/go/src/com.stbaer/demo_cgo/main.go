@@ -6,8 +6,34 @@ package main
 import "C"
 import (
 	"com.stbaer/demo_go/main_lib_simple"
+	"unsafe"
 )
 import "com.stbaer/demo_cgo/cgo_lib_simple"
+
+//export cgo_Add
+func cgo_Add(cgo_v1, cgo_v2 C.int) C.int {
+	var v1 int = int(cgo_v1)
+	var v2 int = int(cgo_v2)
+	var result int = main_lib_simple.Add(v1,v2)
+	var cgo_result C.int = C.int(result)
+	return cgo_result
+}
+
+//export cgo_GetMostBeFriendedReport
+func cgo_GetMostBeFriendedReport(cgo_oids C.OPAQUE_OID_LIST) *C.char {
+	var elements uint = uint(C.get_size_OPAQUE_OID_LIST(cgo_oids))
+	var persons []*main_lib_simple.Person
+	for i := 0; i < int(elements); i++ {
+		var oid uint64 = uint64(C.get_at_OPAQUE_OID_LIST(cgo_oids,C.uint(i)))
+		var person *main_lib_simple.Person = cgo_lib_simple.ObjectForPersonId(oid)
+		persons = append(persons,person)
+	}
+
+	result := main_lib_simple.GetMostBeFriendedReport(persons)
+	var cgo_result *C.char = C.CString(result) // allocates, needs free() by caller
+	return cgo_result
+}
+
 
 //export cgo_NewPerson
 func cgo_NewPerson(cgo_firstname *C.char, cgo_lastname *C.char, cgo_age C.uint) C.ulong {
@@ -102,7 +128,6 @@ func cgo_Person_GetFriends(cgo_oid C.ulong) C.OPAQUE_OID_LIST {
 	var friends []*main_lib_simple.Person = person.GetFriends()
 
 
-
 	var cgo_result C.OPAQUE_OID_LIST = C.get_OPAQUE_OID_LIST()
 
 	for _, friend := range friends {
@@ -144,5 +169,67 @@ func cgo_Person_GetFriendCountByAge(cgo_oid C.ulong) C.OPAQUE_UINT2UINT_MAP {
 	}
 	return cgo_result
 }
+
+//LVL3
+//export cgo_Person_GetFriendsFiltered
+func cgo_Person_GetFriendsFiltered(cgo_oid C.ulong,cgo_fun C.CALLBACK_OID_PERSON) C.OPAQUE_OID_LIST {
+
+	var oid uint64 = uint64(cgo_oid)
+	var person *main_lib_simple.Person = cgo_lib_simple.ObjectForPersonId(oid)
+
+	fun := func(friend *main_lib_simple.Person) bool {
+		var oid_friend uint64 = cgo_lib_simple.PersonIdForObject(friend)
+		return C.call_CALLBACK_OID_PERSON(cgo_fun,C.ulong(oid_friend)) != 0
+	}
+	var friends []*main_lib_simple.Person = person.GetFriendsFiltered(fun)
+	return build_OPAQUE_OID_LIST(friends)
+}
+
+//LVL3
+//export cgo_Person_GetFriendsFilteredByAge
+func cgo_Person_GetFriendsFilteredByAge(cgo_oid C.ulong, cgo_fun C.CALLBACK_AGE) C.OPAQUE_OID_LIST {
+
+	var oid uint64 = uint64(cgo_oid)
+	var person *main_lib_simple.Person = cgo_lib_simple.ObjectForPersonId(oid)
+
+	fun := func(friend_age uint) bool {
+		return C.call_CALLBACK_AGE(cgo_fun,C.uint(friend_age)) != 0
+	}
+	var friends []*main_lib_simple.Person = person.GetFriendsFilteredByAge(fun)
+
+
+	return build_OPAQUE_OID_LIST(friends)
+
+}
+
+func build_OPAQUE_OID_LIST(persons []*main_lib_simple.Person)  C.OPAQUE_OID_LIST {
+	var cgo_result C.OPAQUE_OID_LIST = C.get_OPAQUE_OID_LIST()
+
+	for _, friend := range persons {
+		var oid_friend uint64 = cgo_lib_simple.PersonIdForObject(friend)
+		var cgo_oid_friend C.ulong = C.ulong(oid_friend)
+		C.append_to_OPAQUE_OID_LIST(cgo_result, cgo_oid_friend)
+	}
+	return cgo_result
+}
+
+//LVL4
+//export cgo_Person_GetFriendsFilteredByAge_2
+func cgo_Person_GetFriendsFilteredByAge_2(cgo_oid C.ulong, cgo_fun C.CALLBACK_AGE_2, pointer unsafe.Pointer) C.OPAQUE_OID_LIST {
+
+	var oid uint64 = uint64(cgo_oid)
+	var person *main_lib_simple.Person = cgo_lib_simple.ObjectForPersonId(oid)
+
+	fun := func(friend_age uint,data interface{}) bool {
+		p := data.(unsafe.Pointer)
+		return C.call_CALLBACK_AGE_2(cgo_fun,C.uint(friend_age),p) != 0
+	}
+	var friends []*main_lib_simple.Person = person.GetFriendsFilteredByAge_2(fun,pointer)
+
+
+	return build_OPAQUE_OID_LIST(friends)
+
+}
+
 
 func main() {}
