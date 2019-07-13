@@ -7,8 +7,6 @@
 using namespace std;
 
 
-
-
 OPAQUE_STRING_LIST get_OPAQUE_STRING_LIST() {
     auto list = new vector<string>();
     return static_cast<OPAQUE_STRING_LIST>(list);

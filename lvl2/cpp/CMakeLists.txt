@@ -21,3 +21,5 @@ add_executable(cgo_support cgo_support/lvl2_cgo_support.cpp cgo_support/lvl2_cgo
 
 
 add_executable(cpp_personlib cpp_personlib/main.cpp cpp_personlib/person.cpp cpp_personlib/person.h)
+
+add_executable(cpp_queue cpp_queue/main.cpp cpp_queue/theadsafe_queue.h)

@@ -6,19 +6,20 @@
 
 #include <algorithm>
 #include <stdexcept>
+#include <sstream>
+
 
 using namespace std;
 
 
-
-Person::Person(const string &firstName, const string &lastName, unsigned int age) : first_name(firstName),
+Person::Person(const string firstName, const string lastName, unsigned int age) : first_name(firstName),
                                                                                     last_name(lastName), age(age) {}
 
-const string &Person::getFirstName() const {
+const string Person::getFirstName() const {
     return first_name;
 }
 
-const string &Person::getLastName() const {
+const string Person::getLastName() const {
     return last_name;
 }
 
@@ -26,7 +27,7 @@ unsigned int Person::getAge() const {
     return age;
 }
 
-const vector<sperson> &Person::getFriends() const {
+const vector<sperson> Person::getFriends() const {
     vector<sperson> result;
     copy(friends.cbegin(),friends.cend(),result.begin());
     return result;
@@ -45,11 +46,19 @@ unsigned int Person::addFriend(sperson p) {
 
     for (const auto& f : friends) {
         if (f == p) {
-            throw invalid_argument("")
+            throw invalid_argument("");
         }
     }
 
 
 
     friends.push_back(p);
+
+    return friends.size();
+}
+
+const std::string Person::getString() const {
+    std::stringstream result;
+    result << this->first_name << " " << this->last_name << " " << this->age;
+    return result.str();
 }

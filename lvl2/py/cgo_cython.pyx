@@ -1,8 +1,11 @@
 #coding: utf-8
 #cython: language_level=3
 
+import weakref
 
 from libc.stdlib cimport free
+
+
 
 ctypedef void*OPAQUE_OID_LIST
 ctypedef void*OPAQUE_STRING_LIST
@@ -13,11 +16,11 @@ ctypedef int (*CALLBACK_AGE_2)(unsigned int, void *data)
 
 ctypedef unsigned long ulong
 
-cdef extern from "cgo_lib/cgo_lib_lvl2.h":
-    #LVL0
+cdef extern from "cgo_lib/cgo_lib.h":
     int cgo_Add(int p0, int p1)
 
     #LVL1
+cdef extern from "cgo_lib/cgo_lib.h":
     long unsigned int cgo_NewPerson(char*p0, char*p1, unsigned int p2)
     void cgo_DeletePerson(long unsigned int p0)
     char*cgo_Person_Firstname(long unsigned int p0)
@@ -26,12 +29,13 @@ cdef extern from "cgo_lib/cgo_lib_lvl2.h":
     unsigned int cgo_Person_Age(long unsigned int p0)
 
     #LVL2
+cdef extern from "cgo_lib/cgo_lib.h":
     unsigned int cgo_Person_AddFriend(long unsigned int p0, long unsigned int p1, char** p2)
     OPAQUE_OID_LIST cgo_Person_GetFriends(long unsigned int p0)
     OPAQUE_STRING_LIST cgo_Person_GetFriendFirstNames(long unsigned int p0)
     OPAQUE_UINT2UINT_MAP cgo_Person_GetFriendCountByAge(long unsigned int p0)
 
-    #LVL3
+cdef extern from "cgo_lib/cgo_lib.h":
     OPAQUE_OID_LIST cgo_Person_GetFriendsFiltered(long unsigned int p0, CALLBACK_OID_PERSON p1)
     OPAQUE_OID_LIST cgo_Person_GetFriendsFilteredByAge(long unsigned int p0, CALLBACK_AGE p1)
 
@@ -39,10 +43,7 @@ cdef extern from "cgo_lib/cgo_lib_lvl2.h":
     OPAQUE_OID_LIST cgo_Person_GetFriendsFilteredByAge_2(long unsigned int p0, CALLBACK_AGE_2 p1, void*p2)
 
     #LVL5 - Benchmark
-    char* cgo_GetMostBeFriendedReport(OPAQUE_OID_LIST p0)
-
-
-
+    char*cgo_GetMostBeFriendedReport(OPAQUE_OID_LIST p0)
 
 from libcpp.vector cimport vector
 from libcpp.string cimport string
@@ -52,7 +53,6 @@ cdef object _PersonFilterFun = None
 
 cpdef int add(int v1, int v2):
     return cgo_Add(v1, v2)
-
 
 cpdef str get_most_befriended_report(list persons):
     cdef vector[ulong]id_vector = vector[ulong]()
@@ -64,38 +64,24 @@ cpdef str get_most_befriended_report(list persons):
     cdef str result = tounicode_with_free(cresult)
     return result
 
-
-
-
-
 cdef class Person:
     _KNOWN = {}
     cdef unsigned long oid
+    cdef object __weakref__
 
-    @classmethod
-    def get_person(cls, oid):
-        if oid in cls._KNOWN:
-            result = cls._KNOWN[oid]
-        else:
-            result = Person(oid)
-        return result
-
-    def __cinit__(self, str firstname = None, str lastname = None, unsigned int age = 0, long oid = -1):
+    def __cinit__(self, str firstname = None, str lastname = None,
+                  unsigned int age = 0, long oid = -1):
         cdef char*cfirstname
         cdef char*clastname
-
         if (firstname is not None) and (lastname is not None) and (oid == -1):
             py_byte_string = firstname.encode("UTF-8")
             cfirstname = py_byte_string
-
             py_byte_string = lastname.encode("UTF-8")
             clastname = py_byte_string
-
             self.oid = cgo_NewPerson(cfirstname, clastname, age)
         else:
             self.oid = oid
-
-        Person._KNOWN[self.oid] = self
+        Person._KNOWN[self.oid] = weakref.ref(self)
 
     def __dealloc__(self):
         cgo_DeletePerson(self.oid)
@@ -120,6 +106,17 @@ cdef class Person:
 
     def __str__(self):
         return self.string()
+
+    @classmethod
+    def get_person(cls, oid):
+        if oid in cls._KNOWN:
+            person_wref = cls._KNOWN[oid]
+            person = person_wref()
+            if person is not None:
+                cls._KNOWN[oid] = weakref.ref(person)
+                return person
+        result = Person(oid)
+        return result
 
     cpdef unsigned int age(self):
         return cgo_Person_Age(self.oid)
@@ -183,8 +180,12 @@ cdef class Person:
     cpdef list get_friends_filter_by_age(self, object fun):
         global _PersonFilterFun
         _PersonFilterFun = fun
-        cdef OPAQUE_OID_LIST opaque_p_id_vector = cgo_Person_GetFriendsFilteredByAge(self.oid, filter_by_age)
+
+        cdef OPAQUE_OID_LIST opaque_p_id_vector = \
+            cgo_Person_GetFriendsFilteredByAge(self.oid, filter_by_age)
+
         result = Person._build_result_list(opaque_p_id_vector)
+
         _PersonFilterFun = None
         return result
 

@@ -36,7 +36,10 @@ func cgo_GetMostBeFriendedReport(cgo_oids C.OPAQUE_OID_LIST) *C.char {
 
 
 //export cgo_NewPerson
-func cgo_NewPerson(cgo_firstname *C.char, cgo_lastname *C.char, cgo_age C.uint) C.ulong {
+func cgo_NewPerson(
+	cgo_firstname *C.char,
+	cgo_lastname *C.char,
+	cgo_age C.uint) C.ulong {
 	// Convert Parameters
 	firstname := C.GoString(cgo_firstname)
 	lastname := C.GoString(cgo_lastname)
@@ -60,9 +63,13 @@ func cgo_DeletePerson(cgo_oid C.ulong) {
 //export cgo_Person_Firstname
 func cgo_Person_Firstname(cgo_oid C.ulong) *C.char {
 	var oid uint64 = uint64(cgo_oid)
+
 	var person *main_lib_simple.Person = cgo_lib_simple.ObjectForPersonId(oid)
+
 	var result string = person.Firstname()
+
 	var cgo_result *C.char = C.CString(result) // allocates, needs free() by caller
+
 	return cgo_result
 }
 
@@ -97,17 +104,14 @@ func cgo_Person_Age(cgo_oid C.ulong) C.uint {
 
 //export cgo_Person_AddFriend
 func cgo_Person_AddFriend(cgo_oid C.ulong, cgo_oid_friend C.ulong, cgo_error **C.char) C.uint {
-
 	if *cgo_error != nil {
 		panic("Outout Error Parameter Destination must point to Null")
 	}
 
 	var oid uint64 = uint64(cgo_oid)
 	var person *main_lib_simple.Person = cgo_lib_simple.ObjectForPersonId(oid)
-
 	var oid_friend uint64 = uint64(cgo_oid_friend)
 	var friend *main_lib_simple.Person = cgo_lib_simple.ObjectForPersonId(oid_friend)
-
 	friend_count, err := person.AddFriend(friend)
 
 	if (err != nil) {
@@ -117,7 +121,6 @@ func cgo_Person_AddFriend(cgo_oid C.ulong, cgo_oid_friend C.ulong, cgo_error **C
 	}
 
 	var cgo_result C.uint = C.uint(friend_count)
-
 	return cgo_result
 }
 
@@ -126,8 +129,6 @@ func cgo_Person_GetFriends(cgo_oid C.ulong) C.OPAQUE_OID_LIST {
 	var oid uint64 = uint64(cgo_oid)
 	var person *main_lib_simple.Person = cgo_lib_simple.ObjectForPersonId(oid)
 	var friends []*main_lib_simple.Person = person.GetFriends()
-
-
 	var cgo_result C.OPAQUE_OID_LIST = C.get_OPAQUE_OID_LIST()
 
 	for _, friend := range friends {
@@ -142,10 +143,7 @@ func cgo_Person_GetFriends(cgo_oid C.ulong) C.OPAQUE_OID_LIST {
 func cgo_Person_GetFriendFirstNames(cgo_oid C.ulong) C.OPAQUE_STRING_LIST {
 	var oid uint64 = uint64(cgo_oid)
 	var person *main_lib_simple.Person = cgo_lib_simple.ObjectForPersonId(oid)
-
 	var first_names []string = person.GetFriendFirstNames()
-
-
 	var cgo_result C.OPAQUE_STRING_LIST = C.get_OPAQUE_STRING_LIST()
 
 	for _, first_name := range first_names {
@@ -186,25 +184,34 @@ func cgo_Person_GetFriendsFiltered(cgo_oid C.ulong,cgo_fun C.CALLBACK_OID_PERSON
 }
 
 //LVL3
-//export cgo_Person_GetFriendsFilteredByAge
-func cgo_Person_GetFriendsFilteredByAge(cgo_oid C.ulong, cgo_fun C.CALLBACK_AGE) C.OPAQUE_OID_LIST {
 
+//export cgo_Person_GetFriendsFilteredByAge
+func cgo_Person_GetFriendsFilteredByAge(
+
+	cgo_oid C.ulong, cgo_fun C.CALLBACK_AGE,
+
+	) C.OPAQUE_OID_LIST {
 	var oid uint64 = uint64(cgo_oid)
 	var person *main_lib_simple.Person = cgo_lib_simple.ObjectForPersonId(oid)
 
+
+
 	fun := func(friend_age uint) bool {
+
+
 		return C.call_CALLBACK_AGE(cgo_fun,C.uint(friend_age)) != 0
+
+
 	}
+
 	var friends []*main_lib_simple.Person = person.GetFriendsFilteredByAge(fun)
 
 
 	return build_OPAQUE_OID_LIST(friends)
-
 }
 
 func build_OPAQUE_OID_LIST(persons []*main_lib_simple.Person)  C.OPAQUE_OID_LIST {
 	var cgo_result C.OPAQUE_OID_LIST = C.get_OPAQUE_OID_LIST()
-
 	for _, friend := range persons {
 		var oid_friend uint64 = cgo_lib_simple.PersonIdForObject(friend)
 		var cgo_oid_friend C.ulong = C.ulong(oid_friend)

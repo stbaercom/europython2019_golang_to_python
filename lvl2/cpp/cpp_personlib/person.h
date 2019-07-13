@@ -19,15 +19,17 @@ class Person {
     unsigned int age;
     std::vector<sperson> friends;
 public:
-    Person(const std::string &firstName, const std::string &lastName, unsigned int age);
+    Person(const std::string firstName, const std::string lastName, unsigned int age);
 
-    const std::string &getFirstName() const;
+    const std::string getFirstName() const;
 
-    const std::string &getLastName() const;
+    const std::string getLastName() const;
+
+    const std::string getString() const;
 
     unsigned int getAge() const;
 
-    const std::vector<sperson> &getFriends() const;
+    const std::vector<sperson> getFriends() const;
 
     unsigned int addFriend(sperson);
 };

@@ -44,10 +44,41 @@ func GetMostBeFriendedReport(persons []*Person) string {
 
 }
 
+type MyStrings []string
+
+func (self MyStrings) Contains(search_str string) bool {
+	for _, s := range self {
+		if strings.Contains(s, search_str) {
+			return true
+		}
+	}
+	return false
+}
+
 type Person struct {
 	firstname, lastname string
 	age                 uint
 	friends             []*Person
+}
+
+func NewPerson(firstname string, lastname string, age uint) *Person {
+	return &Person{firstname: firstname, lastname: lastname, age: age}
+}
+
+func (p *Person) String() string {
+	return fmt.Sprintf("%v %v (%v)", p.firstname, p.lastname, p.age)
+}
+
+func (p *Person) Age() uint {
+	return p.age
+}
+
+func (p *Person) Firstname() string {
+	return p.firstname
+}
+
+func (p *Person) Lastname() string {
+	return p.lastname
 }
 
 func (p *Person) AddFriend(friend *Person) (uint, error) {
@@ -71,10 +102,12 @@ func (p *Person) AddFriend(friend *Person) (uint, error) {
 
 }
 
+
 func (p *Person) GetFriends() []*Person {
 	result := append([]*Person(nil), p.friends...)
 	return result
 }
+
 
 func (p *Person) GetFriendFirstNames() []string {
 	result := []string{}
@@ -89,6 +122,7 @@ func (p *Person) GetFriendFirstNames() []string {
 	return result
 }
 
+
 func (p *Person) GetFriendCountByAge() map[uint]uint {
 
 	result := make(map[uint]uint)
@@ -101,6 +135,7 @@ func (p *Person) GetFriendCountByAge() map[uint]uint {
 	return result
 
 }
+
 
 //LVL3
 func (p *Person) GetFriendsFiltered(fun func(*Person) bool) []*Person {
@@ -133,24 +168,4 @@ func (p *Person) GetFriendsFilteredByAge_2(fun func(uint, interface{}) bool, dat
 		}
 	}
 	return result
-}
-
-func (p *Person) String() string {
-	return fmt.Sprintf("%v %v (%v)", p.firstname, p.lastname, p.age)
-}
-
-func (p *Person) Age() uint {
-	return p.age
-}
-
-func (p *Person) Firstname() string {
-	return p.firstname
-}
-
-func (p *Person) Lastname() string {
-	return p.lastname
-}
-
-func NewPerson(firstname string, lastname string, age uint) *Person {
-	return &Person{firstname: firstname, lastname: lastname, age: age}
 }

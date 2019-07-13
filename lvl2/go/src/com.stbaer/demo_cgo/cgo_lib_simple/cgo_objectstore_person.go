@@ -6,7 +6,6 @@ import (
 	"sync"
 )
 
-var objectStorePersonInstance = NewObjectStorePerson()
 
 func PersonIdForObject(object *main_lib_simple.Person) uint64 {
 	return objectStorePersonInstance.IdForObject(object)
@@ -26,6 +25,9 @@ type ObjectStorePerson struct {
 	counter uint64
 	mutex   *sync.Mutex
 }
+
+var objectStorePersonInstance = NewObjectStorePerson()
+
 
 func NewObjectStorePerson() *ObjectStorePerson {
 	return &ObjectStorePerson{
