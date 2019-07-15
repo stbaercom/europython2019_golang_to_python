@@ -1,0 +1,7 @@
+.DS_Store
+.idea
+*.so
+/py/cgo_lib/cgo_lib.a
+/py/cgo_lib/cgo_lib.h
+/py/build
+/py/__pycache__
